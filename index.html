@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Financial Calculator</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #f9f9f9;
+        color: #333;
+      }
+      .container {
+        max-width: 600px;
+        margin: auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        text-align: center;
+        color: #4caf50;
+      }
+      input[type="number"] {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      button {
+        width: 100%;
+        background-color: #4caf50;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      .results {
+        margin-top: 20px;
+      }
+      .results div {
+        padding: 10px;
+        margin: 5px 0;
+        background: #f1f1f1;
+        border-radius: 4px;
+      }
+      .revenue {
+        color: green;
+      }
+      .costs {
+        color: red;
+      }
+      .profit {
+        color: blue;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Financial Calculator (with VAT)</h1>
+      <label for="fullSubscribers">Full Subscribers:</label>
+      <input
+        type="number"
+        id="fullSubscribers"
+        placeholder="Enter number of full subscribers"
+      />
+      <label for="affiliateSubscribers">Affiliate Subscribers:</label>
+      <input
+        type="number"
+        id="affiliateSubscribers"
+        placeholder="Enter number of affiliate subscribers"
+      />
+      <label for="microSoftwareUsers">Micro-Software Users:</label>
+      <input
+        type="number"
+        id="microSoftwareUsers"
+        placeholder="Enter number of micro-software users"
+      />
+      <label for="affiliatePayout">Affiliate Payout (£):</label>
+      <input
+        type="number"
+        id="affiliatePayout"
+        placeholder="Enter affiliate payout per subscriber"
+      />
+      <label for="platformCost">Platform Cost (£):</label>
+      <input
+        type="number"
+        id="platformCost"
+        placeholder="Enter cost per subscriber"
+      />
+      <label for="partnerPercentage">Partner Program Percentage (%):</label>
+      <input
+        type="number"
+        id="partnerPercentage"
+        placeholder="Enter partner percentage"
+      />
+      <label for="vatRate">VAT Rate (%):</label>
+      <input
+        type="number"
+        id="vatRate"
+        placeholder="Enter VAT rate (e.g., 20)"
+        value="20"
+      />
+      <button onclick="calculate()">Calculate</button>
+      <div class="results" id="results"></div>
+    </div>
+
+    <script>
+      function calculate() {
+        // Input values
+        const fullSubscribers =
+          parseFloat(document.getElementById("fullSubscribers").value) || 0;
+        const affiliateSubscribers =
+          parseFloat(document.getElementById("affiliateSubscribers").value) ||
+          0;
+        const microSoftwareUsers =
+          parseFloat(document.getElementById("microSoftwareUsers").value) || 0;
+        const affiliatePayout =
+          parseFloat(document.getElementById("affiliatePayout").value) || 0;
+        const platformCost =
+          parseFloat(document.getElementById("platformCost").value) || 0;
+        const partnerPercentage =
+          (parseFloat(document.getElementById("partnerPercentage").value) ||
+            0) / 100;
+        const vatRate =
+          (parseFloat(document.getElementById("vatRate").value) || 0) / 100;
+
+        // Calculations
+        const subscriptionFee = 50; // Monthly fee
+        const microSoftwareFee = 1; // Monthly fee
+
+        // Revenue
+        const fullRevenue = fullSubscribers * subscriptionFee * 12;
+        const affiliateRevenue = affiliateSubscribers * subscriptionFee * 12;
+        const microSoftwareRevenue = microSoftwareUsers * microSoftwareFee * 12;
+        const totalRevenue =
+          fullRevenue + affiliateRevenue + microSoftwareRevenue;
+
+        // VAT calculations
+        const vatCollected = totalRevenue * vatRate; // VAT collected on sales
+        const vatReclaimable =
+          platformCost *
+          (fullSubscribers + affiliateSubscribers) *
+          12 *
+          vatRate; // VAT reclaimable on platform costs
+        const netVatLiability = vatCollected - vatReclaimable;
+
+        // Costs
+        const affiliateCosts = affiliateSubscribers * affiliatePayout * 12;
+        const platformCosts =
+          (fullSubscribers + affiliateSubscribers) * platformCost * 12;
+        const partnerCosts = microSoftwareRevenue * partnerPercentage;
+        const totalCosts = affiliateCosts + platformCosts + partnerCosts;
+
+        // Profit
+        const netProfitBeforeTax = totalRevenue - totalCosts;
+        const corporationTax = netProfitBeforeTax * 0.19;
+        const netProfitAfterTax = netProfitBeforeTax - corporationTax;
+
+        // Output results
+        const resultsDiv = document.getElementById("results");
+        resultsDiv.innerHTML = `
+        <div class="revenue"><strong>Revenue (Year 1):</strong> £${totalRevenue.toFixed(
+          2
+        )}</div>
+        <div class="revenue"><strong>VAT Collected:</strong> £${vatCollected.toFixed(
+          2
+        )}</div>
+        <div class="revenue"><strong>VAT Reclaimable:</strong> £${vatReclaimable.toFixed(
+          2
+        )}</div>
+        <div class="revenue"><strong>Net VAT Liability:</strong> £${netVatLiability.toFixed(
+          2
+        )}</div>
+        <div class="costs"><strong>Costs:</strong> £${totalCosts.toFixed(
+          2
+        )}</div>
+        <div class="profit"><strong>Net Profit Before Tax:</strong> £${netProfitBeforeTax.toFixed(
+          2
+        )}</div>
+        <div class="profit"><strong>Corporation Tax (19%):</strong> £${corporationTax.toFixed(
+          2
+        )}</div>
+        <div class="profit"><strong>Net Profit After Tax:</strong> £${netProfitAfterTax.toFixed(
+          2
+        )}</div>
+      `;
+      }
+    </script>
+  </body>
+</html>
